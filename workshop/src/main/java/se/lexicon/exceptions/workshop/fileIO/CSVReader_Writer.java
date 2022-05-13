@@ -2,6 +2,7 @@ package se.lexicon.exceptions.workshop.fileIO;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,17 +18,31 @@ public class CSVReader_Writer {
      *
      * @return List<String>of male firstnames
      */
-    public static List<String> getMaleFirstNames() throws IOException {
-
+    public static List<String> getMaleFirstNames() throws Exception {
         BufferedReader reader = null;
         List<String> names = null;
 
-
-        reader = Files.newBufferedReader(Paths.get("firstname_males.txt"));
-        names = reader.lines()
-                .flatMap(line -> Stream.of(line.split(",")))
-                .collect(Collectors.toList());
-
+        try {
+            reader = Files.newBufferedReader(Paths.get("firstname_males.txt"));
+            names = reader.lines()
+                    .flatMap(line -> Stream.of(line.split(",")))
+                    .collect(Collectors.toList());
+        }
+        catch (FileNotFoundException e){
+           System.out.println(e.getMessage());
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }finally {
+            if(reader != null){
+                try{
+                    reader.close();
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
         return names;
     }
 
@@ -40,15 +55,15 @@ public class CSVReader_Writer {
     public static List<String> getFemaleFirstNames() throws IOException {
 
         List<String> names = null;
-        try {
-            BufferedReader reader = Files.newBufferedReader(Paths.get("firstname_female.txt"));
+        try(BufferedReader reader = Files.newBufferedReader(Paths.get("firstname_female.txt"))){
+
             names = reader.lines()
                     .flatMap(line -> Stream.of(line.split(",")))
                     .collect(Collectors.toList());
 
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
+
         }
         return names;
     }

@@ -1,11 +1,14 @@
 package se.lexicon.exceptions.workshop.data_access;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import se.lexicon.exceptions.workshop.domain.Gender;
 import se.lexicon.exceptions.workshop.domain.Person;
+import se.lexicon.exceptions.workshop.exception.DuplicateNameException;
 import se.lexicon.exceptions.workshop.fileIO.CSVReader_Writer;
 
 public class NameService {
@@ -63,15 +66,31 @@ public class NameService {
      *
      * @param name
      */
-    public void addFemaleFirstName(String name) throws IOException {
+    public void addFemaleFirstName(String name) throws DuplicateNameException {
         try {
-            femaleFirstNames.add(name);
-            CSVReader_Writer.saveFemaleNames(femaleFirstNames);
+            List <String> femaleFirstNames = CSVReader_Writer.getFemaleFirstNames();
+            if(addNames(femaleFirstNames,name)) {
+                femaleFirstNames.add(name);
+                CSVReader_Writer.saveFemaleNames(femaleFirstNames);
+            }
         } catch (IOException e) {
-            System.out.println();
+            System.out.println(e.getMessage());
         }
+    }
 
-
+    static boolean addNames(List femaleFirstNames, String name) throws DuplicateNameException {
+        Iterator it = femaleFirstNames.iterator();
+        boolean exit = false;
+        while(it.hasNext()){
+            String retriveName = it.next().toString();
+            System.out.println("Name : " + retriveName);
+            if(name.equalsIgnoreCase(retriveName)){
+               throw new DuplicateNameException("\n "+"Entered Name is already Exits , Please enter new Name ");
+            }else{
+                exit = true;
+            }
+        }
+        return exit;
     }
 
     /**
