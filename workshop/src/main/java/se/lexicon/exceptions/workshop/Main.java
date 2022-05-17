@@ -1,22 +1,27 @@
 package se.lexicon.exceptions.workshop;
 
+import se.lexicon.exceptions.workshop.data_access.NameService;
+import se.lexicon.exceptions.workshop.domain.Person;
+import se.lexicon.exceptions.workshop.exception.DuplicateNameException;
+import se.lexicon.exceptions.workshop.fileIO.CSVReader_Writer;
+
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import se.lexicon.exceptions.workshop.data_access.NameService;
-import se.lexicon.exceptions.workshop.domain.Person;
-import se.lexicon.exceptions.workshop.fileIO.CSVReader_Writer;
-
 public class Main {
 
-	public static void main(String[] args) throws IOException,Exception {
-		
+	public static void main(String[] args)  {
+
 		List <String> maleFirstNames = CSVReader_Writer.getMaleFirstNames();
         List <String> femaleFirstNames = CSVReader_Writer.getFemaleFirstNames();
 
-        List <String> lastNames = CSVReader_Writer.getLastNames();
+        List <String> lastNames = null;
+        try {
+            lastNames = CSVReader_Writer.getLastNames();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         System.out.println("femaleFirstNames -------->"+femaleFirstNames);
@@ -31,8 +36,12 @@ public class Main {
         Scanner readName = new Scanner(System.in);
         System.out.println("Enter Female First Name : ");
         String name = readName.nextLine();
-        nameService.addFemaleFirstName(name);
+        try {
+            nameService.addFemaleFirstName(name);
+        } catch (DuplicateNameException e) {
+            e.printStackTrace();
+        }
 
-	}
+    }
 
 }
